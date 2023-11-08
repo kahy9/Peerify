@@ -2,6 +2,7 @@ import { useEffect, FC, useState } from "react";
 import { Peer, DataConnection } from "peerjs";
 import { toast } from "react-toastify";
 import { PlusCircle, Send } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
@@ -23,6 +24,7 @@ const Create: FC = () => {
     Array<{ content: string; mine: boolean }> | undefined
   >(undefined);
   const [conn, setConn] = useState<DataConnection | undefined>(undefined);
+  const [bottomRef, setBottomRef] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const myPeer = new Peer({
@@ -37,6 +39,12 @@ const Create: FC = () => {
       myPeer.destroy();
     };
   }, []);
+
+  useEffect(() => {
+    if (bottomRef) {
+      bottomRef.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, bottomRef]);
 
   const connect = () => {
     if (peer) {
@@ -99,7 +107,7 @@ const Create: FC = () => {
 
                   {status !== "waiting" && (
                     <CardContent>
-                      <>
+                      <ScrollArea className="h-[200px] w-[350px]">
                         <div className="pt-4">
                           {(messages ?? []).map((message, index) => (
                             <div
@@ -119,7 +127,8 @@ const Create: FC = () => {
                             </div>
                           ))}
                         </div>
-                      </>
+                        <div ref={(el) => setBottomRef(el)} />
+                      </ScrollArea>
                     </CardContent>
                   )}
 
@@ -131,27 +140,30 @@ const Create: FC = () => {
                           className="mr-2"
                           onChange={(e) => setDestPeerId(e.target.value)}
                           value={destPeerId}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") connect();
+                          }}
                         />
                         <Button onClick={connect} size="icon">
                           <PlusCircle className="h-4 w-4" />
                         </Button>
                       </>
-                    )
-                      : (
-                        <>
-                          <Input
-                            placeholder="Type your message..."
-                            className="mr-2"
-                            onChange={(e) => setMessage(e.target.value)}
-                            value={message}
-                            onKeyDown={(e) => { if (e.key === "Enter") handleMessage() }}
-                          />
-                          <Button onClick={handleMessage} size="icon">
-                            <Send className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )
-                    }
+                    ) : (
+                      <>
+                        <Input
+                          placeholder="Type your message..."
+                          className="mr-2"
+                          onChange={(e) => setMessage(e.target.value)}
+                          value={message}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleMessage();
+                          }}
+                        />
+                        <Button onClick={handleMessage} size="icon">
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
                   </CardFooter>
                 </Card>
               </div>

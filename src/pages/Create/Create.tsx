@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { Send } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "../../components/ui/badge";
 import {
   Card,
@@ -22,6 +23,7 @@ const Create: FC = () => {
   const [message, setMessage] = useState<string>("");
   const [status, setStatus] = useState<string>("waiting");
   const [conn, setConn] = useState<DataConnection | undefined>(undefined);
+  const [bottomRef, setBottomRef] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const newPeer = new Peer({
@@ -53,6 +55,12 @@ const Create: FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (bottomRef) {
+      bottomRef.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, bottomRef]);
+
   const handleMessage = () => {
     if (message.trim() === "") return;
     setMessage("");
@@ -78,12 +86,20 @@ const Create: FC = () => {
                     {status === "waiting" ? (
                       <>
                         <CardTitle>
-                          Create chat <Badge className="hover:cursor-default">{status}</Badge>
+                          Create chat{" "}
+                          <Badge className="hover:cursor-default">
+                            {status}
+                          </Badge>
                         </CardTitle>
                         <CardDescription>
                           Create a chat by sharing the id with your friend
                           <br />
-                          <Badge className="mt-2 hover:cursor-pointer" onClick={copyId}>{id}</Badge>
+                          <Badge
+                            className="mt-2 hover:cursor-pointer"
+                            onClick={copyId}
+                          >
+                            {id}
+                          </Badge>
                         </CardDescription>
                       </>
                     ) : (
@@ -100,7 +116,7 @@ const Create: FC = () => {
 
                   {status !== "waiting" && (
                     <CardContent>
-                      <>
+                      <ScrollArea className="h-[200px] w-[350px]">
                         <div className="pt-4">
                           {(messages ?? []).map((message, index) => (
                             <div
@@ -110,17 +126,19 @@ const Create: FC = () => {
                               }
                             >
                               <span
-                                className={`flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ${message?.mine
-                                  ? "bg-muted mt-1"
-                                  : "bg-primary text-primary-foreground ml-auto mt-1"
-                                  }`}
+                                className={`flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ${
+                                  message?.mine
+                                    ? "bg-muted mt-1"
+                                    : "bg-primary text-primary-foreground ml-auto mt-1"
+                                }`}
                               >
                                 {message?.content}
                               </span>
                             </div>
                           ))}
                         </div>
-                      </>
+                        <div ref={(el) => setBottomRef(el)} />
+                      </ScrollArea>
                     </CardContent>
                   )}
 
@@ -132,7 +150,9 @@ const Create: FC = () => {
                           className="mr-2"
                           onChange={(e) => setMessage(e.target.value)}
                           value={message}
-                          onKeyDown={(e) => { if (e.key === "Enter") handleMessage() }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleMessage();
+                          }}
                         />
                         <Button onClick={handleMessage} size="icon">
                           <Send className="h-4 w-4" />
