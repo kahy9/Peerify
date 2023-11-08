@@ -1,31 +1,27 @@
-import { Button } from "@/components/ui/button"
-import { ThemeProvider } from "@/components/ThemeProvider"
-import { ModeToggle } from "./components/ModeToggle/"
-import { buttonVariants } from "@/components/ui/button"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { Create } from "./pages/Create";
+import { Join } from "./pages/Join";
+import { Home } from "./pages/Home";
+import { ThemeProvider } from "./components/ThemeProvider";
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="container mx-auto">
-        <div className="flex justify-between">
-          <Button>Click here</Button>
-          <div className="flex items-center space-x-6 text-sm font-medium">
-            <Button asChild variant={"link"}>
-              <a href="/">Home</a>
-            </Button>
-
-            <Button asChild variant={"link"}>
-              <a href="/about">About</a>
-            </Button>
-
-            <Button asChild variant={"link"}>
-              <a href="/docs">Documentation</a>
-            </Button>
-          </div>
-          <ModeToggle />
-        </div>
-      </div>
+      <ToastContainer />
+      <BrowserRouter>
+        <Routes>
+          <Route>
+            <Route index element={<Home />} />
+            <Route path="create" element={<Create />} />
+            <Route path="join" element={<Join />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   )
 }
