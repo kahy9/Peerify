@@ -116,7 +116,7 @@ const Create: FC = () => {
 
                   {status !== "waiting" && (
                     <CardContent>
-                      <ScrollArea className="h-[200px] w-[350px]">
+                      <ScrollArea className="h-[200px] w-full">
                         <div className="pt-4">
                           {(messages ?? []).map((message, index) => (
                             <div
