@@ -26,5 +26,8 @@ Start the development server:
 npm run dev | yarn dev
 ```
 
+## Signaling Server part
+The signaling server part is available in the repository: <a href="https://github.com/kahy9/Peerify-signaling">Peerify - Signaling Server</a>
+
 ## License
 This project is licensed under the MIT License.
